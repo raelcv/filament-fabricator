@@ -2,6 +2,9 @@
 
 namespace Z3d0X\FilamentFabricator;
 
+use Z3d0X\FilamentFabricator\Commands\MakeLayoutCommand;
+use Z3d0X\FilamentFabricator\Commands\MakePageBlockCommand;
+use Z3d0X\FilamentFabricator\Commands\ClearRoutesCacheCommand;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Event;
@@ -35,7 +38,7 @@ class FilamentFabricatorServiceProvider extends PackageServiceProvider
             ->hasCommands($this->getCommands())
             ->hasInstallCommand(function (InstallCommand $installCommand) {
                 $installCommand
-                    ->startWith(fn (InstallCommand $installCommand) => $installCommand->call('filament:upgrade'))
+                    ->startWith(fn(InstallCommand $installCommand) => $installCommand->call('filament:upgrade'))
                     ->publishConfigFile()
                     ->publishMigrations()
                     ->askToRunMigrations()
@@ -46,9 +49,9 @@ class FilamentFabricatorServiceProvider extends PackageServiceProvider
     protected function getCommands(): array
     {
         $commands = [
-            Commands\MakeLayoutCommand::class,
-            Commands\MakePageBlockCommand::class,
-            Commands\ClearRoutesCacheCommand::class,
+            MakeLayoutCommand::class,
+            MakePageBlockCommand::class,
+            ClearRoutesCacheCommand::class,
         ];
 
         $aliases = [];
@@ -86,21 +89,22 @@ class FilamentFabricatorServiceProvider extends PackageServiceProvider
 
                 return $routesService->findPageOrFail($value);
             });
-
-            $this->registerComponentsFromDirectory(
-                Layout::class,
-                config('filament-fabricator.layouts.register'),
-                config('filament-fabricator.layouts.path'),
-                config('filament-fabricator.layouts.namespace')
-            );
-
-            $this->registerComponentsFromDirectory(
-                PageBlock::class,
-                config('filament-fabricator.page-blocks.register'),
-                config('filament-fabricator.page-blocks.path'),
-                config('filament-fabricator.page-blocks.namespace')
-            );
         }
+
+        // Always register components regardless of console/web context
+        $this->registerComponentsFromDirectory(
+            Layout::class,
+            config('filament-fabricator.layouts.register'),
+            config('filament-fabricator.layouts.path'),
+            config('filament-fabricator.layouts.namespace')
+        );
+
+        $this->registerComponentsFromDirectory(
+            PageBlock::class,
+            config('filament-fabricator.page-blocks.register'),
+            config('filament-fabricator.page-blocks.path'),
+            config('filament-fabricator.page-blocks.namespace')
+        );
     }
 
     public function packageBooted()
@@ -142,11 +146,11 @@ class FilamentFabricatorServiceProvider extends PackageServiceProvider
 
                     return (string) $namespace
                         ->append('\\', $file->getRelativePathname())
-                        ->when($variableNamespace, fn ($namespace) => $namespace->replace('*', $variableNamespace))
+                        ->when($variableNamespace, fn($namespace) => $namespace->replace('*', $variableNamespace))
                         ->replace(['/', '.php'], ['\\', '']);
                 })
-                ->filter(fn (string $class): bool => is_subclass_of($class, $baseClass) && (! (new ReflectionClass($class))->isAbstract()))
-                ->each(fn (string $class) => FilamentFabricator::registerComponent($class, $baseClass))
+                ->filter(fn(string $class): bool => is_subclass_of($class, $baseClass) && (! (new ReflectionClass($class))->isAbstract()))
+                ->each(fn(string $class) => FilamentFabricator::registerComponent($class, $baseClass))
                 ->all(),
         );
     }
