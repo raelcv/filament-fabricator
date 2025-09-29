@@ -28,8 +28,8 @@
         "nunomaduro/collision": "^7.0 | ^8.0",
         "orchestra/testbench": "^8.0 | ^9.0 | ^10.0",
         "pestphp/pest": "^2.0 | *",
-        "pestphp/pest-plugin-laravel": "^2.0 | ^3.1",
-        "pestphp/pest-plugin-livewire": "^2.0 | ^3.0",
+        "pestphp/pest-plugin-laravel": "^2.0 | ^3.1 | ^4.0",
+        "pestphp/pest-plugin-livewire": "^2.0 | ^3.0 | ^4.0",
         "phpstan/phpstan-deprecation-rules": "^1.0 | ^2.0",
         "phpstan/phpstan-phpunit": "^1.0 | ^2.0",
         "spatie/laravel-ray": "^1.26"
